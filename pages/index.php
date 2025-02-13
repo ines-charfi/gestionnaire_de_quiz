@@ -49,7 +49,7 @@ $quizzes = $quiz->read();
     </main>
 
     <footer>
-        <p>&copy; 2025 QuizSite</p>
+        <p>&copy; 2025 Quiz_Night tous droits sont réservés</p>
     </footer>
 </body>
 </html>

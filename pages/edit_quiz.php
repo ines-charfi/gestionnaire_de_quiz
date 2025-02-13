@@ -166,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </main>
 
     <footer>
-        <p>&copy; 2025 QuizSite</p>
+        <p>&copy; 2025 Quiz_Night tous droits sont réservés</p>
     </footer>
 </body>
 
