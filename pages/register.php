@@ -12,10 +12,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $role = "user";
 
     if ($user->register($username, $password, $role)) {
-        echo "Inscription réussie ! <a href='login.php'>Connectez-vous ici</a>";
+        echo "Inscription réussie !";
     } else {
         echo "Erreur : ce nom d'utilisateur existe déjà.";
     }
+    header("Location: login.php");
 }
 ?>
 

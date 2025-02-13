@@ -7,27 +7,42 @@ class Quiz {
     public $title;
     public $description;
     public $image;
+    
+    public $user_id;  // L'ID de l'utilisateur qui crée le quiz
+
 
     public function __construct($db) {
         $this->conn = $db;
     }
-
-    // Créer un quiz
-    public function create() {
-        $query = "INSERT INTO {$this->table} (titre, description, image) VALUES (:titre, :description, :image)";
-        $stmt = $this->conn->prepare($query);
-
-        // Lier les paramètres
-        $stmt->bindParam(':titre', $this->title);
-        $stmt->bindParam(':description', $this->description);
-        $stmt->bindParam(':image', $this->image);
-
-        // Exécution
-        if ($stmt->execute()) {
-            return true;
-        }
-        return false;
+// Créer un quiz
+public function create() {
+    if (empty($this->title) || empty($this->description) || empty($this->image)) {
+        return false; // Retourner false si l'un des champs est vide
     }
+
+    // La requête SQL d'insertion
+    $query = "INSERT INTO " . $this->table . " (titre, description, image, id_user)  VALUES (:titre, :description, :image, :id_user)";
+    
+    // Préparer la requête
+    $stmt = $this->conn->prepare($query);
+
+    // Lier les paramètres
+    $stmt->bindParam(':titre', $this->title);
+    $stmt->bindParam(':description', $this->description);
+    $stmt->bindParam(':image', $this->image);
+    $stmt->bindParam(':id_user', $this->user_id);
+
+    // Exécuter la requête
+    if ($stmt->execute()) {
+        // Si l'insertion réussit, on retourne le dernier ID inséré (id du quiz)
+        return $this->conn->lastInsertId();
+    }
+
+    // Si l'insertion échoue, retourner false
+    return false;
+}
+
+
 
     // Lire tous les quizs
     public function read() {
@@ -83,7 +98,7 @@ class Quiz {
     // Méthode pour supprimer un quiz avec ses questions
     public function deleteWithQuestions($quizId) {
         // Supprimer les réponses liées aux questions
-        $queryDeleteAnswers = "DELETE FROM answers WHERE id_question IN (SELECT id FROM questions WHERE id_quizzes = :quizId)";
+        $queryDeleteAnswers = "DELETE FROM reponses WHERE id_question IN (SELECT id FROM questions WHERE id_quizzes = :quizId)";
         $stmt = $this->conn->prepare($queryDeleteAnswers);
         $stmt->bindParam(":quizId", $quizId);
         $stmt->execute();

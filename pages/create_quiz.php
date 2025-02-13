@@ -1,4 +1,5 @@
 <?php
+session_start();
 include './classes/database.php';
 include './classes/Quiz.php';
 include './classes/Question.php';
@@ -14,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $description = htmlspecialchars($_POST['description']);
     
     // Upload de l'image du quiz
+
     $image = uploadImage($_FILES['image']);
     if (strpos($image, 'images/') === false) {
         echo $image; // Afficher le message d'erreur si l'upload échoue
@@ -44,16 +46,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     header('Location: admin.php');  // Rediriger vers la page admin après la création du quiz
 }
+
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Créer un Quiz</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <header>
         <h1>Créer un Quiz</h1>
@@ -72,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <textarea id="description" name="description" required></textarea><br>
 
                 <label for="image">Image du Quiz:</label><br>
-                <input type="file" id="image" name="image" accept="image/*"><br>
+                <input type="file" id="image" name="image" accept="images/*"><br>
 
                 <hr>
                 <h3>Questions et Réponses</h3>
@@ -148,4 +153,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <p>&copy; 2025 QuizSite</p>
     </footer>
 </body>
+
 </html>

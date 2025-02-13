@@ -11,21 +11,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $user = $auth->login($username, $password);
 
-    if ($user) {
-        $_SESSION["user"] = $user["username"];
-        $_SESSION["role"] = $user["role"];
-
-        if ($user["role"] === "admin") {
-            header("Location: admin_dashboard.php");
-        } else {
-            header("Location: user_dashboard.php");
-        }
-        exit();
+   
     } else {
         $_SESSION["error"] = "Identifiants incorrects.";
-        header("Location: login.php");
+        header("Location: index.php");
         exit();
     }
-}
+
 ?>
 

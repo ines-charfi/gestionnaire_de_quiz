@@ -3,11 +3,11 @@ include './classes/database.php';
 include './classes/Quiz.php';
 include './classes/Question.php';
 include './classes/Reponse.php';
-
-
+include './classes/uploadImage.php';
 
 // Connexion à la base de données
 $db = (new Database())->connect();
+
 $quiz = new Quiz($db);
 $question = new Question($db);
 $answer = new Answer($db);
@@ -34,22 +34,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $description = htmlspecialchars($_POST['description']);
     $image = $_FILES['image']['size'] > 0 ? uploadImage($_FILES['image']) : $quizData['image'];
 
-    // Mettre à jour le quiz
-    $quiz->update($id, $title, $description, $image);
-
-    // Mettre à jour les questions et réponses
-    for ($i = 1; $i <= 3; $i++) {
-        $questionText = htmlspecialchars($_POST['question_' . $i]);
-        $correctAnswerIndex = $_POST['correct_answer_' . $i];
-        
-        $questionId = $question->update($questions[$i - 1]['id'], $questionText);
-
-        for ($j = 1; $j <= 3; $j++) {
-            $answerText = htmlspecialchars($_POST['answer_' . $i . '_' . $j]);
-            $isCorrect = ($correctAnswerIndex == $j) ? 1 : 0;
-            $answer->update($questions[$i - 1]['answers'][$j - 1]['id'], $answerText, $isCorrect);
-        }
-    }
+     // Création du quiz
+     $quiz = new Quiz($db);
+     $quiz->title = $title;
+     $quiz->description = $description;
+     $quiz->image = $image;
+     $quiz->user_id = $_SESSION['id_user']; // Assurez-vous que la session contient l'ID de l'utilisateur connecté
+     
+     // Appeler la méthode create pour insérer dans la base de données
+     $quizId = $quiz->create();  // Passer uniquement les paramètres nécessaires
+     
+     if (!$quizId) {
+         echo "Une erreur est survenue lors de la création du quiz.";
+         exit();
+     }
+ 
+     // Ajouter les questions et les réponses pour chaque question
+     for ($i = 1; $i <= 3; $i++) {
+         $questionText = htmlspecialchars($_POST['question_' . $i]);
+         $correctAnswerIndex = $_POST['correct_answer_' . $i];
+ 
+         // Création de la question
+         $question = new Question($db);
+         $question->create($quizId, $questionText); // Ajouter le quizId à la création de la question
+ 
+         // Ajouter les réponses
+         for ($j = 1; $j <= 3; $j++) {
+             $answerText = htmlspecialchars($_POST['answer_' . $i . '_' . $j]);
+             $isCorrect = ($correctAnswerIndex == $j) ? 1 : 0;  // Marquer la réponse correcte
+             $answer = new Answer($db);
+             $answer->create($question->id, $answerText, $isCorrect); // Passer l'ID de la question créée
+         }
+     }
 
     header('Location: admin.php');  // Rediriger vers la page admin après la modification du quiz
 }
@@ -61,13 +77,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier le Quiz</title>
+    <title>Créer un Quiz</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <header>
-        <h1>Modifier le Quiz</h1>
+        <h1>Créer un Quiz</h1>
         <nav>
             <a href="admin.php">Retour au panel admin</a>
         </nav>
@@ -75,13 +91,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <main>
         <section>
-            <form action="edit_quiz.php?id=<?php echo $quizData['id']; ?>" method="POST" enctype="multipart/form-data">
+            <form action="create_quiz.php" method="POST" enctype="multipart/form-data">
                 <label for="title">Titre du Quiz:</label><br>
-                <input type="text" id="title" name="title" value="<?php echo $quizData['titre']; ?>" required><br>
+                <input type="text" id="title" name="title" required><br>
 
                 <label for="description">Description du Quiz:</label><br>
-                <textarea id="description" name="description"
-                    required><?php echo $quizData['description']; ?></textarea><br>
+                <textarea id="description" name="description" required></textarea><br>
 
                 <label for="image">Image du Quiz:</label><br>
                 <input type="file" id="image" name="image" accept="images/*"><br>
@@ -151,8 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </select><br>
 
                 <hr>
-
-                <button type="submit">Mettre à jour le Quiz</button>
+                <button type="submit">Créer le Quiz</button>
             </form>
         </section>
     </main>
@@ -162,4 +176,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </footer>
 </body>
 
-</html>

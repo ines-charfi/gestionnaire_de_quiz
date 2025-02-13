@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <?php endforeach; ?>
                 </fieldset>
             <?php endforeach; ?>
-            <button type="submit">Soumettre</button>
+            <button type="submit">Validez</button>
         </form>
     </main>
 

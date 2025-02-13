@@ -13,7 +13,7 @@
         <p style="color: red;"><?php echo $_SESSION["error"]; unset($_SESSION["error"]); ?></p>
     <?php endif; ?>
     
-    <form action="process_login.php" method="POST">
+    <form action="index.php" method="POST">
         <label>Nom d'utilisateur :</label>
         <input type="text" name="username" required><br>
         <label>Mot de passe :</label>

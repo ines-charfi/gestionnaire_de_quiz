@@ -8,14 +8,14 @@ class User {
         $this->pdo = $pdo;
     }
 
-    public function register($username, $password, $role = 'user') {
+    public function register($username, $password) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $this->pdo->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
-        return $stmt->execute([$username, $hashedPassword, $role]);
+        $stmt = $this->pdo->prepare("INSERT INTO user (username, password) VALUES (?, ?)");
+        return $stmt->execute([$username, $hashedPassword]);
     }
 
     public function getUserByUsername($username) {
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE username = ?");
+        $stmt = $this->pdo->prepare("SELECT * FROM user WHERE username = ?");
         $stmt->execute([$username]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
