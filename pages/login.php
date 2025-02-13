@@ -21,9 +21,5 @@
         <button type="submit">Se connecter</button>
     </form>
 
-    
-    <footer>
-        <p>&copy; 2025 Quiz_Night tous droits sont réservés</p>
-    </footer>
 </body>
 </html>

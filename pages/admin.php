@@ -21,10 +21,11 @@ $quizzes = $quiz->read();
 
 <body>
     <header>
-        <h1>Panel Admin</h1>
+        <h1>Panel Admin de Quiz_Night</h1>
         <nav>
             <a href="index.php">Retour à l'accueil</a>
             <a href="ajouter_quiz.php">Créer un quiz</a>
+            <a href="logout.php">Déconnexion</a>
         </nav>
     </header>
 

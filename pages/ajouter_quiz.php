@@ -1,8 +1,12 @@
 <?php
 session_start();
+include './classes/database.php';
+include './classes/Quiz.php';
+include './classes/Question.php';
+include './classes/Reponse.php';
 
-include_once './classes/uploadImage.php';  // Inclure le fichier correctement une seule fois
-
+include_once './uploadImage.php';  // Inclure le fichier correctement une seule fois
+$db = new Database();
 $quiz = new Quiz($db);
 $question = new Question($db);
 $answer = new Answer($db);

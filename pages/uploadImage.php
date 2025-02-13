@@ -1,7 +1,7 @@
 <?php
 if (!function_exists('uploadImage')) {
     function uploadImage($file) {
-        $targetDir = "images/";  // Dossier pour stocker les images
+        $targetDir = "../images/";  // Dossier pour stocker les images
         $targetFile = $targetDir . basename($file["name"]);
         $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 
