@@ -13,7 +13,7 @@ class Question {
 
     // Créer une question
     public function create() {
-        $query = "INSERT INTO " . $this->table . " (id, description) VALUES (:id, :description)";
+        $query = "INSERT INTO " . $this->table . " (id_quizzes, description) VALUES (:id_quizzes, :description)";
         $stmt = $this->conn->prepare($query);
 
         // Lier les paramètres

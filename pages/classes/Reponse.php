@@ -14,10 +14,10 @@ class Answer {
 
   // Créer une réponse
   public function create($questionId, $answerText, $isCorrect) {
-    $query = "INSERT INTO answers (question_id, answer_text, is_correct) VALUES (:question_id, :answer_text, :is_correct)";
+    $query = "INSERT INTO reponses (questions_id, description, is_correct) VALUES (:questions_id, :description, :is_correct)";
     $stmt = $this->conn->prepare($query);
     $stmt->bindParam(':question_id', $questionId);
-    $stmt->bindParam(':answer_text', $answerText);
+    $stmt->bindParam(':description', $answerText);
     $stmt->bindParam(':is_correct', $isCorrect);
     if ($stmt->execute()) {
         return true;

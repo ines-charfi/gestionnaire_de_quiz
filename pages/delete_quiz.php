@@ -1,4 +1,5 @@
 <?php
+session_start();
 include './classes/database.php';
 include './classes/Quiz.php';
 include './classes/Question.php';

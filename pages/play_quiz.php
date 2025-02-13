@@ -1,4 +1,5 @@
 <?php
+session_start();
 include './classes/Database.php';
 include './classes/Quiz.php';
 include './classes/Question.php';
@@ -33,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
     }
-    echo "Votre score: " . $score . " sur " . count($questions);
+    echo "Félicitations t'as terminé le quiz ! <br>votre score est : " . $score . " sur " . count($questions);
 }
 ?>
 

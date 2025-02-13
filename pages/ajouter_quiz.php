@@ -1,27 +1,16 @@
 <?php
+session_start();
 include './classes/database.php';
 include './classes/Quiz.php';
 include './classes/Question.php';
 include './classes/Reponse.php';
-include './classes/uploadImage.php';
-
-// Connexion à la base de données
-$db = (new Database())->connect();
+include_once './classes/uploadImage.php';  // Inclure le fichier correctement une seule fois
 
 $quiz = new Quiz($db);
 $question = new Question($db);
 $answer = new Answer($db);
 
-// Fonction pour télécharger l'image
-function uploadImage($file)
-{
-    $targetDir = "../images/";
-    $targetFile = $targetDir . basename($file["name"]);
-    move_uploaded_file($file["tmp_name"], $targetFile);
-    return $targetFile;
-}
-
-// Vérification si l'ID du quiz existe
+// Vérification si l'ID du quiz existe (pour la mise à jour)
 if (isset($_GET['id'])) {
     $quizData = $quiz->readOne($_GET['id']);
     $questions = $question->readByQuiz($_GET['id']);
@@ -29,45 +18,66 @@ if (isset($_GET['id'])) {
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Récupérer les informations du quiz
-    $id = $_GET['id'];
+    $id = $_GET['id'] ?? null;
     $title = htmlspecialchars($_POST['title']);
     $description = htmlspecialchars($_POST['description']);
-    $image = $_FILES['image']['size'] > 0 ? uploadImage($_FILES['image']) : $quizData['image'];
+    $image = $_FILES['image']['size'] > 0 ? uploadImage($_FILES['image']) : ($quizData['image'] ?? null);
 
-     // Création du quiz
-     $quiz = new Quiz($db);
-     $quiz->title = $title;
-     $quiz->description = $description;
-     $quiz->image = $image;
-     $quiz->user_id = $_SESSION['id_user']; // Assurez-vous que la session contient l'ID de l'utilisateur connecté
-     
-     // Appeler la méthode create pour insérer dans la base de données
-     $quizId = $quiz->create();  // Passer uniquement les paramètres nécessaires
-     
-     if (!$quizId) {
-         echo "Une erreur est survenue lors de la création du quiz.";
-         exit();
-     }
- 
-     // Ajouter les questions et les réponses pour chaque question
-     for ($i = 1; $i <= 3; $i++) {
-         $questionText = htmlspecialchars($_POST['question_' . $i]);
-         $correctAnswerIndex = $_POST['correct_answer_' . $i];
- 
-         // Création de la question
-         $question = new Question($db);
-         $question->create($quizId, $questionText); // Ajouter le quizId à la création de la question
- 
-         // Ajouter les réponses
-         for ($j = 1; $j <= 3; $j++) {
-             $answerText = htmlspecialchars($_POST['answer_' . $i . '_' . $j]);
-             $isCorrect = ($correctAnswerIndex == $j) ? 1 : 0;  // Marquer la réponse correcte
-             $answer = new Answer($db);
-             $answer->create($question->id, $answerText, $isCorrect); // Passer l'ID de la question créée
-         }
-     }
+    // Si l'image renvoie une erreur, on arrête le traitement
+    if (strpos($image, 'Désolé') !== false) {
+        echo $image;
+        exit();
+    }
 
-    header('Location: admin.php');  // Rediriger vers la page admin après la modification du quiz
+    // Création ou mise à jour du quiz
+    if ($id) {
+        // Mise à jour du quiz
+        $quiz->id = $id;
+        $quiz->title = $title;
+        $quiz->description = $description;
+        $quiz->image = $image;
+        $quiz->user_id = $_SESSION['id_user']; // Assurez-vous que la session contient l'ID de l'utilisateur connecté
+
+        // Appeler la méthode de mise à jour
+        if (!$quiz->update($id, $title, $description, $image)) {
+            echo "Une erreur est survenue lors de la mise à jour du quiz.";
+            exit();
+        }
+    } else {
+        // Création du quiz
+        $quiz->title = $title;
+        $quiz->description = $description;
+        $quiz->image = $image;
+        $quiz->user_id = $_SESSION['id_user'];
+
+        // Appeler la méthode create pour insérer dans la base de données
+        $quizId = $quiz->create();  // Passer uniquement les paramètres nécessaires
+        if (!$quizId) {
+            echo "Une erreur est survenue lors de la création du quiz.";
+            exit();
+        }
+    }
+
+    // Ajouter les questions et les réponses
+    for ($i = 1; $i <= 3; $i++) {
+        $questionText = htmlspecialchars($_POST['question_' . $i]);
+        $correctAnswerIndex = $_POST['correct_answer_' . $i];
+
+        // Création de la question
+        $question = new Question($db);
+        $question->create($quizId, $questionText);  // Ajouter le quizId à la création de la question
+
+        // Ajouter les réponses
+        for ($j = 1; $j <= 3; $j++) {
+            $answerText = htmlspecialchars($_POST['answer_' . $i . '_' . $j]);
+            $isCorrect = ($correctAnswerIndex == $j) ? 1 : 0;  // Marquer la réponse correcte
+            $answer = new Answer($db);
+            $answer->create($question->id, $answerText, $isCorrect);  // Passer l'ID de la question créée
+        }
+    }
+
+    // Rediriger vers la page admin après la modification ou création du quiz
+    header('Location: admin.php');
 }
 ?>
 
@@ -91,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <main>
         <section>
-            <form action="create_quiz.php" method="POST" enctype="multipart/form-data">
+            <form action="ajouter_quiz.php" method="POST" enctype="multipart/form-data">
                 <label for="title">Titre du Quiz:</label><br>
                 <input type="text" id="title" name="title" required><br>
 
@@ -99,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <textarea id="description" name="description" required></textarea><br>
 
                 <label for="image">Image du Quiz:</label><br>
-                <input type="file" id="image" name="image" accept="images/*"><br>
+                <input type="file" id="image" name="image" accept="image/*"><br>
 
                 <hr>
                 <h3>Questions et Réponses</h3>
@@ -175,4 +185,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <p>&copy; 2025 QuizSite</p>
     </footer>
 </body>
-
+</html>

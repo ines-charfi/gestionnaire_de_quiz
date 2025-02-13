@@ -5,7 +5,6 @@ include './classes/Question.php';
 include './classes/Reponse.php';
 
 
-
 // Connexion à la base de données
 $db = (new Database())->connect();
 $quiz = new Quiz($db);
@@ -39,15 +38,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Mettre à jour les questions et réponses
     for ($i = 1; $i <= 3; $i++) {
-        $questionText = htmlspecialchars($_POST['question_' . $i]);
-        $correctAnswerIndex = $_POST['correct_answer_' . $i];
-        
-        $questionId = $question->update($questions[$i - 1]['id'], $questionText);
+        // Vérifier si la question existe avant de l'utiliser
+        if (isset($questions[$i - 1])) {
+            $questionText = htmlspecialchars($_POST['question_' . $i]);
+            $correctAnswerIndex = $_POST['correct_answer_' . $i];
+            
+            // Mise à jour de la question
+            $questionId = $question->update($questions[$i - 1]['id'], $questionText);
 
-        for ($j = 1; $j <= 3; $j++) {
-            $answerText = htmlspecialchars($_POST['answer_' . $i . '_' . $j]);
-            $isCorrect = ($correctAnswerIndex == $j) ? 1 : 0;
-            $answer->update($questions[$i - 1]['answers'][$j - 1]['id'], $answerText, $isCorrect);
+            // Vérifier si les réponses existent avant de les mettre à jour
+            if (isset($questions[$i - 1]['answers'])) {
+                for ($j = 1; $j <= 3; $j++) {
+                    if (isset($questions[$i - 1]['answers'][$j - 1])) {
+                        $answerText = htmlspecialchars($_POST['answer_' . $i . '_' . $j]);
+                        $isCorrect = ($correctAnswerIndex == $j) ? 1 : 0;
+                        $answer->update($questions[$i - 1]['answers'][$j - 1]['id'], $answerText, $isCorrect);
+                    }
+                }
+            }
         }
     }
 
@@ -91,63 +99,63 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <!-- Question 1 -->
                 <label for="question_1">Question 1:</label><br>
-                <input type="text" id="question_1" name="question_1" required><br>
+                <input type="text" id="question_1" name="question_1" value="<?php echo isset($questions[0]) ? $questions[0]['question'] : ''; ?>" required><br>
 
                 <!-- Réponses Question 1 -->
                 <label for="answer_1_1">Réponse 1:</label><br>
-                <input type="text" id="answer_1_1" name="answer_1_1" required><br>
+                <input type="text" id="answer_1_1" name="answer_1_1" value="<?php echo isset($questions[0]['answers'][0]) ? $questions[0]['answers'][0]['reponse'] : ''; ?>" required><br>
                 <label for="answer_1_2">Réponse 2:</label><br>
-                <input type="text" id="answer_1_2" name="answer_1_2" required><br>
+                <input type="text" id="answer_1_2" name="answer_1_2" value="<?php echo isset($questions[0]['answers'][1]) ? $questions[0]['answers'][1]['reponse'] : ''; ?>" required><br>
                 <label for="answer_1_3">Réponse 3:</label><br>
-                <input type="text" id="answer_1_3" name="answer_1_3" required><br>
+                <input type="text" id="answer_1_3" name="answer_1_3" value="<?php echo isset($questions[0]['answers'][2]) ? $questions[0]['answers'][2]['reponse'] : ''; ?>" required><br>
 
                 <label for="correct_answer_1">Réponse correcte:</label><br>
                 <select name="correct_answer_1" id="correct_answer_1">
-                    <option value="1">Réponse 1</option>
-                    <option value="2">Réponse 2</option>
-                    <option value="3">Réponse 3</option>
+                    <option value="1" <?php echo (isset($questions[0]['answers'][0]) && $questions[0]['answers'][0]['correct'] == 1) ? 'selected' : ''; ?>>Réponse 1</option>
+                    <option value="2" <?php echo (isset($questions[0]['answers'][1]) && $questions[0]['answers'][1]['correct'] == 1) ? 'selected' : ''; ?>>Réponse 2</option>
+                    <option value="3" <?php echo (isset($questions[0]['answers'][2]) && $questions[0]['answers'][2]['correct'] == 1) ? 'selected' : ''; ?>>Réponse 3</option>
                 </select><br>
 
                 <hr>
 
                 <!-- Question 2 -->
                 <label for="question_2">Question 2:</label><br>
-                <input type="text" id="question_2" name="question_2" required><br>
+                <input type="text" id="question_2" name="question_2" value="<?php echo isset($questions[1]) ? $questions[1]['question'] : ''; ?>" required><br>
 
                 <!-- Réponses Question 2 -->
                 <label for="answer_2_1">Réponse 1:</label><br>
-                <input type="text" id="answer_2_1" name="answer_2_1" required><br>
+                <input type="text" id="answer_2_1" name="answer_2_1" value="<?php echo isset($questions[1]['answers'][0]) ? $questions[1]['answers'][0]['reponse'] : ''; ?>" required><br>
                 <label for="answer_2_2">Réponse 2:</label><br>
-                <input type="text" id="answer_2_2" name="answer_2_2" required><br>
+                <input type="text" id="answer_2_2" name="answer_2_2" value="<?php echo isset($questions[1]['answers'][1]) ? $questions[1]['answers'][1]['reponse'] : ''; ?>" required><br>
                 <label for="answer_2_3">Réponse 3:</label><br>
-                <input type="text" id="answer_2_3" name="answer_2_3" required><br>
+                <input type="text" id="answer_2_3" name="answer_2_3" value="<?php echo isset($questions[1]['answers'][2]) ? $questions[1]['answers'][2]['reponse'] : ''; ?>" required><br>
 
                 <label for="correct_answer_2">Réponse correcte:</label><br>
                 <select name="correct_answer_2" id="correct_answer_2">
-                    <option value="1">Réponse 1</option>
-                    <option value="2">Réponse 2</option>
-                    <option value="3">Réponse 3</option>
+                    <option value="1" <?php echo (isset($questions[1]['answers'][0]) && $questions[1]['answers'][0]['correct'] == 1) ? 'selected' : ''; ?>>Réponse 1</option>
+                    <option value="2" <?php echo (isset($questions[1]['answers'][1]) && $questions[1]['answers'][1]['correct'] == 1) ? 'selected' : ''; ?>>Réponse 2</option>
+                    <option value="3" <?php echo (isset($questions[1]['answers'][2]) && $questions[1]['answers'][2]['correct'] == 1) ? 'selected' : ''; ?>>Réponse 3</option>
                 </select><br>
 
                 <hr>
 
                 <!-- Question 3 -->
                 <label for="question_3">Question 3:</label><br>
-                <input type="text" id="question_3" name="question_3" required><br>
+                <input type="text" id="question_3" name="question_3" value="<?php echo isset($questions[2]) ? $questions[2]['question'] : ''; ?>" required><br>
 
                 <!-- Réponses Question 3 -->
                 <label for="answer_3_1">Réponse 1:</label><br>
-                <input type="text" id="answer_3_1" name="answer_3_1" required><br>
+                <input type="text" id="answer_3_1" name="answer_3_1" value="<?php echo isset($questions[2]['answers'][0]) ? $questions[2]['answers'][0]['reponse'] : ''; ?>" required><br>
                 <label for="answer_3_2">Réponse 2:</label><br>
-                <input type="text" id="answer_3_2" name="answer_3_2" required><br>
+                <input type="text" id="answer_3_2" name="answer_3_2" value="<?php echo isset($questions[2]['answers'][1]) ? $questions[2]['answers'][1]['reponse'] : ''; ?>" required><br>
                 <label for="answer_3_3">Réponse 3:</label><br>
-                <input type="text" id="answer_3_3" name="answer_3_3" required><br>
+                <input type="text" id="answer_3_3" name="answer_3_3" value="<?php echo isset($questions[2]['answers'][2]) ? $questions[2]['answers'][2]['reponse'] : ''; ?>" required><br>
 
                 <label for="correct_answer_3">Réponse correcte:</label><br>
                 <select name="correct_answer_3" id="correct_answer_3">
-                    <option value="1">Réponse 1</option>
-                    <option value="2">Réponse 2</option>
-                    <option value="3">Réponse 3</option>
+                    <option value="1" <?php echo (isset($questions[2]['answers'][0]) && $questions[2]['answers'][0]['correct'] == 1) ? 'selected' : ''; ?>>Réponse 1</option>
+                    <option value="2" <?php echo (isset($questions[2]['answers'][1]) && $questions[2]['answers'][1]['correct'] == 1) ? 'selected' : ''; ?>>Réponse 2</option>
+                    <option value="3" <?php echo (isset($questions[2]['answers'][2]) && $questions[2]['answers'][2]['correct'] == 1) ? 'selected' : ''; ?>>Réponse 3</option>
                 </select><br>
 
                 <hr>
