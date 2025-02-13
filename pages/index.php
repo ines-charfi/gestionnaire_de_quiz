@@ -20,11 +20,11 @@ $quizzes = $quiz->read();
 </head>
 <body>
     <header>
-        <h1>Bienvenue sur le site des Quiz</h1>
+        <h1><b>Bienvenue sur le site de Quiz_Night</b></h1>
         <nav>
         <a href="login.php" class="btn">Login</a> &emsp;
         <a href="register.php" class="btn">Register</a>
-            <a href="admin.php">Panel Admin</a>
+          
         </nav>
     </header>
 

@@ -1,9 +1,6 @@
 <?php
 session_start();
-include './classes/database.php';
-include './classes/Quiz.php';
-include './classes/Question.php';
-include './classes/Reponse.php';
+
 include_once './classes/uploadImage.php';  // Inclure le fichier correctement une seule fois
 
 $quiz = new Quiz($db);

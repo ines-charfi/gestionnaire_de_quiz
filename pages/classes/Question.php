@@ -19,7 +19,10 @@ class Question {
         // Lier les paramètres
         $stmt->bindParam(':id_quizzes', $this->quizzes_id);
         $stmt->bindParam(':description', $this->text);
-
+        if (empty($id_quizzes)) {
+            die('The quiz ID cannot be empty');
+        }
+        
         // Exécution
         if ($stmt->execute()) {
             return true;

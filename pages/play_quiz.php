@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
     }
-    echo "Félicitations t'as terminé le quiz ! <br>votre score est : " . $score . " sur " . count($questions);
+    echo "<b>Félicitations vous avez terminé le quiz ! <br>votre score est :</b> " . $score . " sur " . count($questions);
 }
 ?>
 
