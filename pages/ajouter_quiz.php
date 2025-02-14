@@ -7,7 +7,7 @@ include_once './uploadImage.php';
 include 'User.php';
 
 session_start();
-var_dump($_SESSION);
+
 
 $db = new Database();
 $quiz = new Quiz($db);
