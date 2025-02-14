@@ -11,12 +11,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $user = $auth->login($username, $password);
 
-   
-    } else {
-        $_SESSION["error"] = "Identifiants incorrects.";
-        header("Location: index.php");
-        exit();
-    }
+    $_SESSION['user'] = $user;
+
+} else {
+    $_SESSION["error"] = "Identifiants incorrects.";
+    header("Location: index.php");
+    exit();
+}
 
 ?>
-

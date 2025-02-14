@@ -1,12 +1,13 @@
-
 <?php
-session_start();
 include './classes/database.php';
 include './classes/Quiz.php';
 include './classes/Question.php';
 include './classes/Reponse.php';
 include_once './uploadImage.php';
 include 'User.php';
+
+session_start();
+var_dump($_SESSION);
 
 $db = new Database();
 $quiz = new Quiz($db);
@@ -191,9 +192,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </section>
     </main>
 
-    
+
     <footer>
         <p>&copy; 2025 Quiz_Night tous droits sont réservés</p>
     </footer>
 </body>
+
 </html>
