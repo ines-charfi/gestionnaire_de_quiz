@@ -18,6 +18,22 @@ class Database {
 
         return $this->conn;
     }
+    // Méthode pour préparer une requête SQL
+    public function prepare($sql) {
+        return $this->conn->prepare($sql);
+    }
+
+    // Méthode pour exécuter une requête sans paramètre
+    public function execute($sql) {
+        return $this->conn->exec($sql);
+    }
+
+    // Méthode pour exécuter une requête avec des paramètres
+    public function executeWithParams($sql, $params) {
+        $stmt = $this->prepare($sql);
+        $stmt->execute($params);
+        return $stmt;
+    }
 
 }
 ?>

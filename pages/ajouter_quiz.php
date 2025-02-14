@@ -1,11 +1,13 @@
+
 <?php
 session_start();
 include './classes/database.php';
 include './classes/Quiz.php';
 include './classes/Question.php';
 include './classes/Reponse.php';
+include_once './uploadImage.php';
+include 'User.php';
 
-include_once './uploadImage.php';  // Inclure le fichier correctement une seule fois
 $db = new Database();
 $quiz = new Quiz($db);
 $question = new Question($db);
@@ -18,6 +20,12 @@ if (isset($_GET['id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Vérification si l'utilisateur est connecté
+    if (!isset($_SESSION['id_user'])) {
+        echo "Vous devez être connecté pour ajouter un quiz.";
+        exit(); // Empêcher l'ajout du quiz si l'utilisateur n'est pas connecté
+    }
+
     // Récupérer les informations du quiz
     $id = $_GET['id'] ?? null;
     $title = htmlspecialchars($_POST['title']);
@@ -65,20 +73,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $correctAnswerIndex = $_POST['correct_answer_' . $i];
 
         // Création de la question
-        $question = new Question($db);
-        $question->create($quizId, $questionText);  // Ajouter le quizId à la création de la question
+        $questionObj = new Question($db);
+        $questionObj->create($quizId, $questionText);  // Ajouter le quizId à la création de la question
 
         // Ajouter les réponses
         for ($j = 1; $j <= 3; $j++) {
             $answerText = htmlspecialchars($_POST['answer_' . $i . '_' . $j]);
             $isCorrect = ($correctAnswerIndex == $j) ? 1 : 0;  // Marquer la réponse correcte
-            $answer = new Answer($db);
-            $answer->create($question->id, $answerText, $isCorrect);  // Passer l'ID de la question créée
+            $answerObj = new Answer($db);
+            $answerObj->create($questionObj->id, $answerText, $isCorrect);  // Passer l'ID de la question créée
         }
     }
 
     // Rediriger vers la page admin après la modification ou création du quiz
     header('Location: admin.php');
+    exit();
 }
 ?>
 
